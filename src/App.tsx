@@ -1,9 +1,10 @@
-import { useState } from "react";
+
 import { Route, Routes } from "react-router";
 import { Navbar } from "./components/Navbar";
 import Home from "./pages/Home";
+import { CreatePostPage } from "./pages/CreatePostpage";
 function App() {
-  const [count, setCount] = useState(0);
+
 
   return (
     <div className="min-h-screen bg-black text-gray-100 transition-opacity duration-700 pt-20">
@@ -12,6 +13,7 @@ function App() {
       <div className="container mx-auto px-4 py-6">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/create" element={<CreatePostPage />} />
         </Routes>
       </div>
     </div>
