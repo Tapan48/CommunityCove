@@ -1,7 +1,7 @@
 
 import { Route, Routes } from "react-router";
 import { Navbar } from "./components/Navbar";
-import Home from "./pages/Home";
+import { Home } from "./pages/Home";
 import { CreatePostPage } from "./pages/CreatePostpage";
 function App() {
 
