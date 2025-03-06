@@ -2,10 +2,12 @@ import React, { useState } from "react";
 
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "../supabase-client";
+import { useAuth } from "../context/AuthContext";
 
 interface PostInput {
   title: string;
   content: string;
+  avatar_url: string | null;
 }
 
 const createPost = async (post: PostInput, imageFile: File) => {
@@ -34,13 +36,14 @@ const CreatePostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const { user } = useAuth();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!image) {
       return;
     }
-    mutate({ post: { title, content }, image: image });
+    mutate({ post: { title, content, avatar_url: user?.user_metadata?.avatar_url || null }, image: image });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
