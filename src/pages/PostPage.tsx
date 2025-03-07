@@ -5,6 +5,6 @@ export const PostPage = () => {
   return (
     <div className="pt-10">
       <PostDetail postId={Number(id)} />
-    </div> 
+    </div>
   );
 };

@@ -1,8 +1,8 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Comment } from "./CommentSection";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabase-client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Comment } from "./CommentSection";
 
 interface Props {
   comment: Comment & {

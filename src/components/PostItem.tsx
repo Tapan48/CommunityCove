@@ -13,7 +13,7 @@ const PostItem = ({ post }: Props) => {
         <div className="w-80 h-76 bg-[rgb(24,27,32)] border border-[rgb(84,90,106)] rounded-[20px] text-white flex flex-col p-5 overflow-hidden transition-colors duration-300 group-hover:bg-gray-800">
           {/* Header avatar and Title */}
           <div className="flex items-center space-x-2">
-          {post.avatar_url ? (
+            {post.avatar_url ? (
               <img
                 src={post.avatar_url}
                 alt="User Avatar"
@@ -28,7 +28,6 @@ const PostItem = ({ post }: Props) => {
               </div>
             </div>
           </div>
-
 
           {/* Image Banner */}
           <div className="mt-2 flex-1">

@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-
-import { useMutation } from "@tanstack/react-query";
-import { supabase } from "../supabase-client";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChangeEvent, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { supabase } from "../supabase-client";
+import { Community, fetchCommunities } from "./CommunityList";
 
 interface PostInput {
   title: string;
   content: string;
   avatar_url: string | null;
+  community_id?: number | null;
 }
 
 const createPost = async (post: PostInput, imageFile: File) => {
@@ -32,32 +33,50 @@ const createPost = async (post: PostInput, imageFile: File) => {
   return data;
 };
 
-const CreatePostForm = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [image, setImage] = useState<File | null>(null);
+export const CreatePost = () => {
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const [communityId, setCommunityId] = useState<number | null>(null);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const { user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!image) {
-      return;
-    }
-    mutate({ post: { title, content, avatar_url: user?.user_metadata?.avatar_url || null }, image: image });
-  };
+  const { data: communities } = useQuery<Community[], Error>({
+    queryKey: ["communities"],
+    queryFn: fetchCommunities,
+  });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setImage(file);
-    }
-  };
-
-  const { mutate, isPending, isError  } = useMutation({
-    mutationFn: (data: { post: PostInput; image: File }) => {
-      return createPost(data.post, data.image);
+  const { mutate, isPending, isError } = useMutation({
+    mutationFn: (data: { post: PostInput; imageFile: File }) => {
+      return createPost(data.post, data.imageFile);
     },
   });
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!selectedFile) return;
+    mutate({
+      post: {
+        title,
+        content,
+        avatar_url: user?.user_metadata.avatar_url || null,
+        community_id: communityId,
+      },
+      imageFile: selectedFile,
+    });
+  };
+
+  const handleCommunityChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setCommunityId(value ? Number(value) : null);
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-4">
@@ -89,27 +108,37 @@ const CreatePostForm = () => {
       </div>
 
       <div>
+        <label> Select Community</label>
+        <select id="community" onChange={handleCommunityChange}>
+          <option value={""}> -- Choose a Community -- </option>
+          {communities?.map((community, key) => (
+            <option key={key} value={community.id}>
+              {community.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
         <label htmlFor="image" className="block mb-2 font-medium">
           Upload Image
-        </label>    
+        </label>
         <input
           type="file"
           id="image"
           accept="image/*"
-          onChange={handleImageChange}
+          onChange={handleFileChange}
           className="w-full text-gray-200"
         />
       </div>
-
       <button
         type="submit"
         className="bg-purple-500 text-white px-4 py-2 rounded cursor-pointer"
       >
-        Create Post
+        {isPending ? "Creating..." : "Create Post"}
       </button>
+
       {isError && <p className="text-red-500"> Error creating post.</p>}
     </form>
   );
 };
-
-export default CreatePostForm;

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { data } from "react-router";
 import { supabase } from "../supabase-client";
 import PostItem from "./PostItem";
 
@@ -15,9 +16,11 @@ export interface Post {
 
 const fetchPosts = async (): Promise<Post[]> => {
   const { data, error } = await supabase.rpc("get_posts_with_counts");
+  console.log("fetchPosts", data);
   if (error) throw new Error(error.message);
   return data as Post[];
 };
+
 
 const PostList = () => {
   const { data, error, isLoading } = useQuery<Post[], Error>({
@@ -28,13 +31,15 @@ const PostList = () => {
   if (error) return <div>Error {error.message}</div>;
   console.log(data);
 
-  return <div className="flex flex-wrap gap-6 justify-center"> 
-    {data?.map((post)=>(
-      <div key={post.id}>
-        <PostItem post={post} />
-      </div>
-    ))}
-  </div>;
+  return (
+    <div className="flex flex-wrap gap-6 justify-center">
+      {data?.map((post) => (
+        <div key={post.id}>
+          <PostItem post={post} />
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default PostList;
