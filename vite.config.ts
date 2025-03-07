@@ -5,6 +5,7 @@ import { defineConfig } from "vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  base: process.env.VITE_BASE_PATH || "/Social-Media-App/",
 });
 
 // tailwindcss() is a plugin that allows us to use tailwindcss within our vite project
